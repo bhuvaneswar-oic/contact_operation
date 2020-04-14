@@ -70,7 +70,7 @@ class Contactlist extends Component {
                         <div className="logo" />
                         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
                             <Menu.Item key="1">
-                                <Link to="/"><UserOutlined /></Link>
+                                <Link to="/"><UserOutlined /><span>Home</span></Link>
                             </Menu.Item>
                         </Menu>
                     </Sider>

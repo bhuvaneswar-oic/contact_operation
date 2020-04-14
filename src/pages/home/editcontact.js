@@ -98,7 +98,7 @@ class editcontact extends Component {
                         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
                             <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
                                 <Menu.Item key="1">
-                                    <Link to="/"><UserOutlined /></Link>
+                                    <Link to="/"><UserOutlined /><span>Home</span></Link>
                                 </Menu.Item>
                             </Menu>
                         </Menu>

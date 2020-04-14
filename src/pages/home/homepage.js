@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Menu, Row, Col, Dropdown, Radio } from 'antd';
+import { Layout, Menu, Row, Col, Dropdown, Radio, Modal } from 'antd';
 import 'antd/dist/antd.css';
 import styles from './main.module.css';
 import { Link } from 'react-router-dom';
@@ -20,14 +20,14 @@ class Homepage extends Component {
         this.ref = firebase.firestore().collection('contacts');
         this.unsubscribe = null;
         this.state = {
-          collapsed: true,
-          openSearch: false,
-          contacts: [],
-          contact: {},
-          value: 'sVqkgvrKlZvBExOQ4mBG',
+            collapsed: true,
+            openSearch: false,
+            contacts: [],
+            contact: {},
+            value: 'sVqkgvrKlZvBExOQ4mBG',
+            visible: false
         };
-        console.log(this.state.value, "value")
-      }
+    }
 
     openSearch = () => {
         this.setState({ openSearch: false });
@@ -36,68 +36,84 @@ class Homepage extends Component {
     onCollectionUpdate = (querySnapshot) => {
         const contacts = [];
         querySnapshot.forEach((doc) => {
-          const { name, desigination, email, phone, company, address, image } = doc.data();
-          contacts.push({
-            key: doc.id,
-            doc, // DocumentSnapshot
-            name,
-            desigination,
-            email,
-            phone,
-            company,
-            address,
-            image
-          });
+            const { name, desigination, email, phone, company, address } = doc.data();
+            contacts.push({
+                key: doc.id,
+                doc, // DocumentSnapshot
+                name,
+                desigination,
+                email,
+                phone,
+                company,
+                address
+            });
         });
         this.setState({
             contacts
-       }, () => {
-           console.log(contacts, "contacts")
-       });
-      }
-
-    componentDidMount() {
-    this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
-    console.log(this.state.value, "valued")
-    this.contactList();
+        }, () => {
+            console.log(contacts, "contacts")
+        });
     }
 
-    contactList = () => {
-        console.log(this.state.value, "Id")
+    componentDidMount() {
+        this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
+    }
+
+    componentDidUpdate() {
         const ref = firebase.firestore().collection('contacts').doc(this.state.value);
         ref.get().then((doc) => {
-          if (doc.exists) {
-            this.setState({
-              contact: doc.data(),
-              key: doc.id,
-              isLoading: false
-            });
-          } else {
-            console.log("No such document!");
-          }
+            if (doc.exists) {
+                this.setState({
+                    contact: doc.data(),
+                    key: doc.id,
+                    isLoading: false
+                });
+            } else {
+                console.log("No such document!");
+            }
         });
-      }
+    }
 
     onChange = e => {
         console.log('radio checked', e.target.value);
         this.setState({
-          value:e.target.value
+            value: e.target.value,
+            key: e.target.value
         });
-        this.contactList();
-      };
+    };
+
+    showModal = () => {
+        this.setState({
+          visible: true,
+        });
+    };
+
+    handleOk = e => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
+
+    handleCancel = e => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
 
     render() {
         const menu = (
             <Menu>
-            {this.state.contacts.map(contact =>
-              <Menu.Item>
-                <Link to={`/show/${contact.key}`}>
-                  {contact.name}
-                </Link>
-              </Menu.Item>
-            )}
+                {this.state.contacts.map(contact =>
+                    <Menu.Item>
+                        <Link to={`/show/${contact.key}`}>
+                            {contact.name}
+                        </Link>
+                    </Menu.Item>
+                )}
             </Menu>
-          );
+        );
         return (
             <div>
                 <Layout>
@@ -105,7 +121,7 @@ class Homepage extends Component {
                         <div className="logo" />
                         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
                             <Menu.Item key="1">
-                                <Link to="/"><UserOutlined /></Link>
+                                <Link to="/"><UserOutlined /><span>Home</span></Link>
                             </Menu.Item>
                         </Menu>
                     </Sider>
@@ -125,7 +141,7 @@ class Homepage extends Component {
                                 <Col span={3} className={styles.textRight}>+ Add</Col>
                                 <Col span={2} className={styles.textRight}><Dropdown overlay={menu}>
                                     <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                        Select User <DownOutlined />
+                                        Edit User <DownOutlined />
                                     </a>
                                 </Dropdown></Col>
                                 <Col span={1} className={styles.textRight}><BellOutlined /></Col>
@@ -153,28 +169,40 @@ class Homepage extends Component {
                                                 <th>+</th>
                                                 <th>Basic info</th>
                                                 <th>Company</th>
+                                                <th>Chat</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {this.state.contacts.map((contact, i) =>
-                                            <tr key={i}>
-                                            <td>
-                                                <Radio.Group onChange={this.onChange} value={this.state.value}>
-                                                    <Radio value={contact.key}></Radio>
-                                                </Radio.Group></td>
-                                            <td>{contact.name}<br />{contact.email}</td>
-                                            <td>{contact.company}</td>
-                                            </tr>
+                                                <tr key={i}>
+                                                    <td>
+                                                        <Radio.Group onChange={this.onChange} value={this.state.value}>
+                                                            <Radio name={i} value={contact.key}></Radio>
+                                                        </Radio.Group></td>
+                                                    <td>{contact.name}<br />{contact.email}</td>
+                                                    <td>{contact.company}</td>
+                                                    <td><a target="_blank" href={`https://wa.me/91${contact.phone}`}><img src="https://i.pinimg.com/originals/99/0b/7d/990b7d2c2904f8cd9bc884d3eed6d003.png" width="20px" alt="" /></a></td>
+                                                </tr>
                                             )}
                                         </tbody>
                                     </table>
+                                    <Modal
+                                        title="Send Message"
+                                        visible={this.state.visible}
+                                        onOk={this.handleOk}
+                                        onCancel={this.handleCancel}
+                                    >
+                                        <p>Some contents...</p>
+                                        <p>Some contents...</p>
+                                        <p>Some contents...</p>
+                                    </Modal>
                                 </Col>
                                 <Col span={1} />
                                 <Col span={11} className={styles.profile}>
                                     <div className={`${styles.pad30} ${styles.textCenter}`}>
-                                         <img src="https://i.ya-webdesign.com/images/controller-button-png-8.png" className={styles.profilePic} alt="" />
-                                         <h3>{this.state.contact.name}</h3>  
-                                         <h3>{this.state.contact.desigination}</h3>
+                                        <img src="https://i.ya-webdesign.com/images/controller-button-png-8.png" className={styles.profilePic} alt="" />
+                                        <h3>{this.state.contact.name}</h3>
+                                        <h3>{this.state.contact.desigination}</h3>
                                     </div>
                                     <table>
                                         <tbody>
