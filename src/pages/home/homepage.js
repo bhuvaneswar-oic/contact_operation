@@ -59,20 +59,20 @@ class Homepage extends Component {
         this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
     }
 
-    componentDidUpdate() {
-        const ref = firebase.firestore().collection('contacts').doc(this.state.value);
-        ref.get().then((doc) => {
-            if (doc.exists) {
-                this.setState({
-                    contact: doc.data(),
-                    key: doc.id,
-                    isLoading: false
-                });
-            } else {
-                console.log("No such document!");
-            }
-        });
-    }
+    // componentDidUpdate() {
+    //     const ref = firebase.firestore().collection('contacts').doc(this.state.value);
+    //     ref.get().then((doc) => {
+    //         if (doc.exists) {
+    //             this.setState({
+    //                 contact: doc.data(),
+    //                 key: doc.id,
+    //                 isLoading: false
+    //             });
+    //         } else {
+    //             console.log("No such document!");
+    //         }
+    //     });
+    // }
 
     onChange = e => {
         console.log('radio checked', e.target.value);
