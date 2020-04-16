@@ -29,7 +29,10 @@ class Homepage extends Component {
             search: null,
             sortType: "",
             shown: true,
-            PageNumber: 1
+            PageNumber: 1,
+            NumberOfPages: 0,
+            contactsPerPage: 5,
+            contactsInCurrentPage: []
         };
     }
 
@@ -55,9 +58,9 @@ class Homepage extends Component {
         this.setState({
             contacts
         });
-        this.paginate(1, 5);
+        this.paginate();
     }
-    
+
     componentDidMount() {
         this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
     }
@@ -90,48 +93,55 @@ class Homepage extends Component {
         })
     }
 
-    delete(id){
+    delete(id) {
         firebase.firestore().collection('contacts').doc(id).delete().then(() => {
-          console.log("Document successfully deleted!");
-          this.props.history.push("/")
+            console.log("Document successfully deleted!");
+            this.props.history.push("/")
         }).catch((error) => {
-          console.error("Error removing document: ", error);
+            console.error("Error removing document: ", error);
         });
-      }
+    }
 
-      toggle() {
+    toggle() {
         let mobile = window.matchMedia("(max-width: 767px)");
         if (mobile.matches) {
-          this.setState({
-            shown: !this.state.shown
-          });
+            this.setState({
+                shown: !this.state.shown
+            });
         } else {
-          this.setState({
-            shown: this.state.shown
-          });
+            this.setState({
+                shown: this.state.shown
+            });
         }
-      }
+    }
 
-      closeSideBar = () => {
+    closeSideBar = () => {
         this.setState({ shown: false });
-      };
+    };
 
-      sortBy = () => {
-          let sort = this.state.contacts.reverse();
-      }
+    sortBy = () => {
+        let sort = this.state.contacts.reverse();
+    }
 
-      paginate = (current, pageSize) => {
-        console.log(current, pageSize, "pageSize")
-        // console.log(typeof current, typeof pageSize)
-        // console.log(this.state.contacts.slice(current - 1, pageSize - 1));
-        let PageNumber = this.state.contacts.length / pageSize;
-        console.log(PageNumber, "PageNumber");
-        let contactPage = this.state.contacts.slice(current - 1, pageSize);
-        this.setState({ contacts: contactPage, PageNumber: this.state.PageNumber })
-      }
-      
-    render() {
+    paginate = (PageNumber = 1) => {
+        try {
+            let NumberOfPages = this.state.contacts.length / this.state.contactsPerPage;
+        const startIndex = this.state.contactsPerPage * (PageNumber - 1);
+        const endIndex = this.state.contactsPerPage * PageNumber;
+        let contactsInCurrentPage = this.state.contacts.slice(startIndex , endIndex);
+        this.setState({
+            contactsInCurrentPage,
+            NumberOfPages,
+            PageNumber
+        })
+        } catch (error) {
+            console.log(error);
+        }
         
+    }
+
+    render() {
+
         const menu = (
             <Menu>
                 {this.state.contacts.map(contact =>
@@ -154,7 +164,7 @@ class Homepage extends Component {
             </Menu>
         );
 
-        const contactsList = this.state.contacts.filter((data) => {
+        const contactsList = this.state.contactsInCurrentPage.filter((data) => {
             if (this.state.search == null)
                 return data
             else if (data.name.toLowerCase().includes(this.state.search.toLowerCase()) || data.name.toLowerCase().includes(this.state.search.toLowerCase())) {
@@ -188,7 +198,7 @@ class Homepage extends Component {
 
         let shown = {
             display: this.state.shown ? "block" : "none"
-          };
+        };
 
         return (
             <div>
@@ -204,7 +214,7 @@ class Homepage extends Component {
                     </Sider>
                     <Layout className="site-layout">
                         <Header className="site-layout-background" style={{ padding: "0px 10px", borderBottom: "1px solid #e2e2e2" }}>
-                            
+
                             <Row>
                                 <Col xs={0} sm={16} lg={18}>
                                     {
@@ -218,13 +228,13 @@ class Homepage extends Component {
                                 </Col>
                                 <Col xs={0} sm={3} lg={3} className={`${styles.textRight}`}>+ Add</Col>
                                 <Col xs={24} sm={4} lg={2} className={`${styles.textRight} ${styles.mar40}`}>
-                                <div className={styles.menuBar}><button className={styles.xsMenuBar} onClick={this.toggle.bind(this)}>Menu</button></div>
-                                <Dropdown overlay={menu}>
-                                    <a onClick={e => e.preventDefault()}>
-                                        Edit User <DownOutlined />
-                                    </a>
-                                </Dropdown></Col>
-                                <Col xs={0} sm={1} lg={1}  span={1} className={styles.textRight}><BellOutlined /></Col>
+                                    <div className={styles.menuBar}><button className={styles.xsMenuBar} onClick={this.toggle.bind(this)}>Menu</button></div>
+                                    <Dropdown overlay={menu}>
+                                        <a onClick={e => e.preventDefault()}>
+                                            Edit User <DownOutlined />
+                                        </a>
+                                    </Dropdown></Col>
+                                <Col xs={0} sm={1} lg={1} span={1} className={styles.textRight}><BellOutlined /></Col>
                             </Row>
                         </Header>
                         <Content className={styles.Body}>
@@ -233,19 +243,19 @@ class Homepage extends Component {
                                     <h1><ContactsOutlined /> Contacts</h1>
                                 </Col>
                                 <Col xs={6} lg={4}>
-                                <div className={styles.textRight}>
-                                <Dropdown overlay={sortby}>
-                                    <p style={{ marginTop: '15px' }} onClick={e => e.preventDefault()}>
-                                        Sort By <DownOutlined />
-                                    </p>
-                                </Dropdown>
-                                </div>
+                                    <div className={styles.textRight}>
+                                        <Dropdown overlay={sortby}>
+                                            <p style={{ marginTop: '15px' }} onClick={e => e.preventDefault()}>
+                                                Sort By <DownOutlined />
+                                            </p>
+                                        </Dropdown>
+                                    </div>
                                 </Col>
                             </Row>
                             <Row>
                                 <Col xs={24} sm={16} lg={8}>
                                     <div className={styles.searchContact}>
-                                        <input type="text" placeholder="Search" onChange={(e) => this.handleSearch(e)}/>
+                                        <input type="text" placeholder="Search" onChange={(e) => this.handleSearch(e)} />
                                     </div>
                                 </Col>
                                 <Col xs={24} sm={8} lg={4}>
@@ -257,7 +267,7 @@ class Homepage extends Component {
                             <Row className={styles.mt30}>
                                 <Col xs={24} sm={24} lg={11}>
                                     <div className={styles.textRight}>
-                                            {this.state.contacts.length}
+                                        {this.state.contacts.length}
                                     </div>
                                     <table>
                                         <thead>
@@ -273,9 +283,9 @@ class Homepage extends Component {
                                             {contactsList}
                                         </tbody>
                                     </table>
-                                    <Pagination pageSize={3} defaultCurrent={this.state.PageNumber} total={this.state.contacts.length} onChange={this.paginate}/>
+                                    <Pagination pageSize={this.state.contactsPerPage} defaultCurrent={this.state.PageNumber} total={this.state.contacts.length} onChange={this.paginate} />
                                 </Col>
-                                <Col xs={1} sm={1} lg={1}/>
+                                <Col xs={1} sm={1} lg={1} />
                                 <Col xs={24} sm={24} lg={11} className={styles.profile}>
                                     <div className={`${styles.pad30} ${styles.textCenter}`}>
                                         {/* {Myname[0]} */}
