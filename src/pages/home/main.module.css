@@ -140,3 +140,88 @@
   .pad30{
     padding: 30px;
   }
+  .deleteIcon{
+    margin-top: 10px;
+    color: red;
+    cursor: pointer;
+  }
+  .xsMenuBar{
+    display: none;
+  }
+  .TitleText{ 
+    font-size: 40px;
+    border-radius: 50px;
+    border: 5px solid #000000;
+    padding: 5px 17px;
+    width: 100px;
+    text-transform: capitalize;
+    margin-bottom: 20px;
+  }
+  .textCenter{
+    text-align: center;
+  }
+
+  @media (max-width: 990px) and (min-width: 768px){
+    .Body{
+      height: 100%;
+    }
+    .profile{
+      margin-top: 20px;
+    }
+  }
+
+@media (max-width: 767px) and (min-width: 280px){
+  .xsMenuBar{
+    display: block;
+    padding: 10px;
+    color: #fff;
+    background: linear-gradient(#f18764, #ed62a2);
+    height: 30px;
+    width: 70px;
+    line-height: 0px;
+    margin-top: 7px;
+    border: 0px;
+    z-index: 9;
+  }
+  .xsoverlay{
+    width: 100%;
+    height: 100%;background-color: #0000;
+    position: absolute;
+  }
+  .profile{
+    margin-top: 20px;
+  }
+  .xsRight{
+    text-align: right;
+  }
+  .mar40{
+    z-index: 2;
+  }
+  .menuBar{
+    background: #fff;
+    padding: 10px;
+    position: absolute;
+    z-index: 2;
+  }
+  .btnTheme{
+    background: linear-gradient(#f18764, #ed62a2) !important;
+    border: 0px;
+    color: #fff;
+    font-size: 18px;
+    width: 100%;
+    border-radius: 50px;
+    height: 45px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .Body{
+    background: #fff;
+    padding: 20px;
+    height: 100%;
+  }
+  .profile{
+    background: #e2e2e2;
+    padding: 0px;
+  }
+}

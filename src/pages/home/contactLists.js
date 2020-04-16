@@ -24,7 +24,6 @@ class Contactlist extends Component {
           contact: {},
           key: ''
         };
-        const Context = React.createContext(this.state.contact);
       }
 
     openSearch = () => {
@@ -94,7 +93,7 @@ class Contactlist extends Component {
                         <Content className={styles.Body}>
                             <h1><ContactsOutlined /> Contacts List</h1>
                             <Row className={`${styles.mt30}`}>
-                                <Col span={12} className={styles.profile}>
+                                <Col xs={24} sm={24} lg={12} className={styles.profile}>
                                     <div className={styles.textRight}>
                                     <Link to={`/editcontact/${this.state.key}`}><button className={styles.btnThemeCrud}>Edit</button></Link>&nbsp;
                                     <button onClick={this.delete.bind(this, this.state.key)} className={styles.btnThemeCrud}>Delete</button>

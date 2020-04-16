@@ -101,7 +101,7 @@ class addcontact extends Component {
                         <Content className={styles.Body}>
                             <h1>Add Contacts</h1>
                             <Row className={styles.mt30}>
-                                <Col span={12}>
+                                <Col xs={24} sm={24} lg={12}>
                                     <form>
                                         <div>
                                             <label className={styles.mt20}>Name</label>

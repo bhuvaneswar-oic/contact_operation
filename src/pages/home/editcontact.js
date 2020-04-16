@@ -123,7 +123,7 @@ class editcontact extends Component {
                         <Content className={styles.Body}>
                             <h1>Edit Contacts</h1>
                             <Row className={styles.mt30}>
-                                <Col span={12}>
+                                <Col xs={24} sm={24} lg={12}>
                                     <div className={styles.textRight}><Link to={`/show/${key}`}><button className={styles.btnThemeCrud}>Contacts List</button></Link></div>
                                     <form>
                                         <div>
